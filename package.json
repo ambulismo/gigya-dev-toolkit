@@ -1,6 +1,6 @@
 {
   "name": "gigya-dev-toolkit",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Gigya developer toolkit for common tasks, with a focus on ease-of-use and automation. All tools are available from both a web browser and an interactive command-line.",
   "main": "src/gigya-dev-toolkit.js",
   "scripts": {
