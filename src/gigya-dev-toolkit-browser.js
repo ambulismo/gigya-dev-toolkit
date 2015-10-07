@@ -1,7 +1,8 @@
 'use strict';
 
 require('babelify/polyfill'); // Babel require hook does this automatically, but not using in browser
-const $ = global.jQuery = require('jquery'); // Expose for Bootstrap / Angular
+const $ = global.jQuery = require('jquery'); // Expose for Bootstrap / Angular / jQuery plugins
+require('actual/jquery.actual.js');
 const bootstrap = require('bootstrap');
 const angular = require('angular');
 const app = angular.module('app', [
@@ -138,7 +139,14 @@ function run(routerHelper, translateHelper, $state, $rootScope, $translate) {
   // The config floats at the bottom of the screen
   // Ensure that you can scroll the entire page content
   $rootScope.$on('$stateChangeSuccess', () => {
-    setTimeout(() => $('div.page').css('margin-bottom', $('div.config').outerHeight()), 50);
+    setTimeout(() => {
+      // Get element's outerHeight (even when element is hidden)
+      const configHeight = $('div.config').actual('outerHeight');
+
+      // Add margin to adjust elements depending on the variable height of the config
+      $('div.page').css('margin-bottom', configHeight);
+      $('div.config-toggle').css('margin-bottom', configHeight);
+    }, 50);
   });
 
   // The logical flow of this app is a little strange because it was written to work on command-line and browser

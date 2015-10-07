@@ -61,6 +61,10 @@
     }
   }
 
+  .config-hidden .config-toggle, .config-hidden .page {
+    margin-bottom: 0 !important;
+  }
+
   .page {
     padding: 20px;
   }
@@ -72,14 +76,34 @@
     background-color: #FFF;
     border-top: 1px solid #CCC;
   }
+
+  .config-toggle {
+    position: fixed;
+    bottom: -22px;
+    z-index: 1;
+    width: 100%;
+    cursor: pointer;
+  }
+  .config-hidden .config-toggle {
+    bottom: 10px;
+  }
+  .config-toggle span {
+    left: 50%;
+  }
   </style>
   <script src="./build.js"></script>
 
   <title>Gigya Developer Toolkit</title>
 </head>
-<body>
+<body ng-class="{ 'config-hidden': showConfig }">
   <div class="loader"></div>
   <div class="page" ui-view autoscroll="false"></div>
-  <div class="config" ui-view="config" autoscroll="false"></div>
+
+  <div class="config-toggle" ng-click="showConfig = !showConfig">
+    <span class="glyphicon"
+          ng-class="{ 'glyphicon-circle-arrow-down': !showConfig, 'glyphicon-circle-arrow-up': showConfig  }"
+          aria-hidden="true"></span>
+  </div>
+  <div class="config" ui-view="config" autoscroll="false" ng-hide="showConfig"></div>
 </body>
 </html>
