@@ -1,6 +1,7 @@
 <style type="text/css">
 .state {
   min-height: 22px;
+  font-size: 14px;
 }
 .languages {
   position: absolute;
@@ -11,36 +12,60 @@
   width: 80px;
   margin-right: 10px;
 }
+.state .table {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+.state .table th {
+  width: 250px;
+}
+.state .table th, .state .table td {
+  padding: 2px;
+  border-top: none;
+}
 </style>
 
 <div class="state">
-  <div ng-if="vm.state.userKey">
-    <strong>{{ 'GIGYA_USER_KEY' | translate }}:</strong> {{ vm.state.userKey }}
-  </div>
-  <div ng-if="vm.state.userKey">
-    <strong>{{ 'GIGYA_USER_SECRET_KEY' | translate }}:</strong> {{ '*'.repeat(vm.state.userSecret.length) }}
-  </div>
-  <div ng-if="vm.state.partnerId">
-    <strong>{{ 'GIGYA_PARTNER_ID' | translate }}:</strong> {{ vm.state.partnerId }}
-  </div>
-  <div ng-if="vm.state.task">
-    <strong>{{ 'TASK' | translate }}:</strong> {{ vm.state.task.toUpperCase() | translate }}
-  </div>
-  <div ng-if="vm.state.settings">
-    <strong>{{ 'SETTINGS' | translate }}:</strong>
-
-    <!-- Ugly hack to detect if settings is an array -->
-    <!-- When support is added to import multiple files will remove this -->
-    <span ng-if="vm.state.settings.length > 3">{{ vm.state.settings.toUpperCase() | translate }}</span>
-    <span ng-if="vm.state.settings.length <= 3"><span ng-repeat="setting in vm.state.settings">{{ setting.toUpperCase() | translate }}{{:: !$last ? ', ' : '' }}</span></span>
-  </span>
-  </div>
-  <div ng-if="vm.state.sourceApiKey">
-    <strong>{{ 'SOURCE_GIGYA_SITE' | translate }}:</strong> {{ vm.state.sourceApiKey }}
-  </div>
-  <div ng-if="vm.state.destinationApiKey">
-    <strong>{{ 'DESTINATION_GIGYA_SITE' | translate }}:</strong> {{ vm.state.destinationApiKey }}
-  </div>
+  <table class="table">
+    <tr ng-if="vm.state.userKey">
+      <th scope="row">{{ 'GIGYA_USER_KEY' | translate }}</th>
+      <td>{{ vm.state.userKey }}</td>
+    </tr>
+    <tr ng-if="vm.state.userKey">
+      <th scope="row">{{ 'GIGYA_USER_SECRET_KEY' | translate }}</th>
+      <td>{{ '*'.repeat(vm.state.userSecret.length) }}</td>
+    </tr>
+    <tr ng-if="vm.state.partnerId">
+      <th scope="row">{{ 'GIGYA_PARTNER_ID' | translate }}</th>
+      <td>{{ vm.state.partnerId }}</td>
+    </tr>
+    <tr ng-if="vm.state.task">
+      <th scope="row">{{ 'TASK' | translate }}</th>
+      <td>{{ vm.state.task.toUpperCase() | translate }}</td>
+    </tr>
+    <tr ng-if="vm.state.settings">
+      <th scope="row">{{ 'SETTINGS' | translate }}</th>
+      <td>
+        <!-- Ugly hack to detect if settings is an array -->
+        <!-- When support is added to import files to multiple settings with one command will remove this -->
+        <span ng-if="vm.state.settings.toUpperCase">{{ vm.state.settings.toUpperCase() | translate }}</span>
+        <span ng-if="!vm.state.settings.toUpperCase">
+          <span ng-repeat="setting in vm.state.settings">{{ setting.toUpperCase() | translate }}{{:: !$last ? ', ' : '' }}</span>
+        </span>
+      </td>
+    </tr>
+    <tr ng-if="vm.state.sourceApiKey">
+      <th scope="row">{{ 'SOURCE_GIGYA_SITE' | translate }}</th>
+      <td>{{ vm.state.sourceApiKey }}</td>
+    </tr>
+    <tr ng-if="vm.state.destinationApiKeys">
+      <th scope="row">{{ 'DESTINATION_GIGYA_SITES' | translate }}</th>
+      <td>
+        <div ng-repeat="apiKey in vm.state.destinationApiKeys">{{ apiKey }}</div>
+      </td>
+    </tr>
+  </table>
 </div>
 
 <div class="languages">

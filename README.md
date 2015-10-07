@@ -21,7 +21,9 @@ For convenience, the GDT browser interface is hosted online at: [https://tools.g
 
 ````npm -g install gigya-dev-toolkit```` will install the ````gigya-dev-toolkit```` interactive command-line interface on your machine.
 
-The GDT command-line treats the current working directory as it's "project directory". All exported files will be automatically downloaded into the current working directory, the file selection dialog shows you only files in the current working directory, etc. After running a successful command via the interactive interace, the full command with arguments will be shown so that you can easily run the same command again.
+The GDT command-line treats the current working directory as it's project directory. All exported files will be automatically downloaded into the current working directory, the file selection dialog shows you only files in the current working directory, etc. 
+
+After running a successful command via the interactive interace, the full command with arguments will be shown so that you can easily run the same command again.
 
 ##### Save credentials
 
@@ -43,14 +45,14 @@ Settings can be exported as JSON. You can select multiple settings to export. On
 
 #### Import
 
-Exported setting files can be imported into any API key.
+Exported setting files can be imported into API key(s).
 
 
 #### Copy
 
-Copy settings between API keys. You can select multiple settings to copy at once.
+Copy settings between API key(s). You can select multiple settings to copy at once and copy to multiple destination API keys.
 
 
 #### Validation
 
-Settings (sourced from another API key) can be validated against an API key's live settings. If validation fails, the difference between the expected and actual setting will be shown graphically.
+Settings (sourced from an API key) can be validated against other API key(s) live settings. If validation fails, the difference between the expected and actual setting will be shown graphically.

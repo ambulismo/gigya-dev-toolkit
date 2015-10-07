@@ -7,7 +7,7 @@
   "GIGYA_API_KEY": "Gigya API llave",
   "GIGYA_SITE": "Gigya sitio",
   "SOURCE_GIGYA_SITE": "Fuente Gigya sitio",
-  "DESTINATION_GIGYA_SITE": "Destino Gigya sitio",
+  "DESTINATION_GIGYA_SITES": "Destino Gigya sitios",
   "SETTING": "Ajuste",
   "SETTINGS": "Ajustes",
   "SCHEMA": "Esquema",

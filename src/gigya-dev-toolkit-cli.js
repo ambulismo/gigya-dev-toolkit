@@ -18,12 +18,15 @@ state
   .option('--partnerId [value]', t.GIGYA_PARTNER_ID)
   .option('--sourceApiKey [value]', t.SOURCE_GIGYA_SITE)
   .option('--sourceFile [value]', t.SETTINGS_FILE)
-  .option('--destinationApiKey [value]', t.DESTINATION_GIGYA_SITE)
+  .option('--destinationApiKeys [value]', t.DESTINATION_GIGYA_SITES)
   .parse(process.argv);
 
 // Convert strings to arrays when necessary
 if(_.isString(state.settings) && state.task !== 'import') {
   state.settings = state.settings.split(',');
+}
+if(_.isString(state.destinationApiKeys)) {
+  state.destinationApiKeys = state.destinationApiKeys.split(',');
 }
 
 function prompt({ questions }) {
@@ -102,34 +105,42 @@ function prompt({ questions }) {
   });
 }
 
-function validate({ diffs }) {
-  _.each(diffs, ({ setting, diff, sourceObj ,destinationObj, isDifferent, numAdded, numRemoved, numChanged }) => {
-    console.log(`${t[setting.toUpperCase()]}:`.bold.underline);
-    if(!isDifferent) {
-      console.log(t.VALIDATION_PASSED.green);
-    } else {
-      if(numChanged) {
-        console.log(`${t.CHANGED} ${numChanged} ${numChanged > 1 ? t.VALUES : t.VALUE}`.bold.yellow);
-      }
-      if(numRemoved) {
-        console.log(`${t.REMOVED} ${numRemoved} ${numRemoved > 1 ? t.VALUES : t.VALUE}`.bold.red);
-      }
-      if(numAdded) {
-        console.log(`${t.ADDED} ${numAdded} ${numAdded > 1 ? t.VALUES : t.VALUE}`.bold.green);
-      }
-      console.log('');
-
-      // Print visual diff
-      diff.forEach((part) => {
-        // Part type determines color
-        const color = part.added ? 'green' : part.removed ? 'red' : 'grey';
-
-        // Append text to pre
-        process.stderr.write((part.abbrValue ? part.abbrValue : part.value)[color]);
-      });
-    }
-
+function validate({ validations }) {
+  _.each(validations, ({ diffs, site }) => {
+    console.log(`${site.baseDomain}`.bold.underline);
+    console.log(`${site.description}`);
+    console.log(`${site.apiKey}`);
     console.log('');
+
+    _.each(diffs, ({ setting, diff, sourceObj ,destinationObj, isDifferent, numAdded, numRemoved, numChanged }) => {
+      console.log(`${t[setting.toUpperCase()]}:`.bold.underline);
+      if(!isDifferent) {
+        console.log(t.VALIDATION_PASSED.green);
+      } else {
+        if(numChanged) {
+          console.log(`${t.CHANGED} ${numChanged} ${numChanged > 1 ? t.VALUES : t.VALUE}`.bold.yellow);
+        }
+        if(numRemoved) {
+          console.log(`${t.REMOVED} ${numRemoved} ${numRemoved > 1 ? t.VALUES : t.VALUE}`.bold.red);
+        }
+        if(numAdded) {
+          console.log(`${t.ADDED} ${numAdded} ${numAdded > 1 ? t.VALUES : t.VALUE}`.bold.green);
+        }
+        console.log('');
+
+        // Print visual diff
+        diff.forEach((part) => {
+          // Part type determines color
+          const color = part.added ? 'green' : part.removed ? 'red' : 'grey';
+
+          // Append text to pre
+          process.stderr.write((part.abbrValue ? part.abbrValue : part.value)[color]);
+        });
+      }
+
+      console.log('');
+      console.log('');
+    });
   });
 
   state.finished = true;

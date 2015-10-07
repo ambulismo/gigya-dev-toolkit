@@ -8,10 +8,11 @@ const readFile = require('./helpers/read-file');
 const jsdiff = require('diff');
 
 const toolkit = co.wrap(function *executeInner(
-  { userKey, userSecret, task, settings, partnerId, sourceFile, sourceApiKey, destinationApiKey }) {
+  { userKey, userSecret, task, settings, partnerId, sourceFile, sourceApiKey, destinationApiKeys }) {
   // Used in for() loops
   // Can be better to avoid loops that call functions to preserve use of yield
   let i;
+  let ii;
 
   // Gigya credentials needed to access API
   if(!userKey || !userSecret) {
@@ -191,16 +192,16 @@ const toolkit = co.wrap(function *executeInner(
         };
       }
 
-      // Get API key to import to
-      if(!destinationApiKey) {
+      // Get API key(s) to import to
+      if(!destinationApiKeys) {
         return {
           view: 'prompt',
           params: {
             questions: {
-              name: 'destinationApiKey',
-              type: 'list',
-              message: 'DESTINATION_GIGYA_SITE',
-              choices: sites
+              name: 'destinationApiKeys',
+              type: 'checkbox',
+              message: 'DESTINATION_GIGYA_SITES',
+              choices: _.filter(sites, (site) => site.value !== sourceApiKey)
             }
           }
         };
@@ -208,10 +209,13 @@ const toolkit = co.wrap(function *executeInner(
 
       // Fetch data from file, parse into JSON, and pass parameter into crud method
       // Parameter is either "schema", "screensets", or "policies"
-      yield crud('update', settings, {
-        apiKey: destinationApiKey,
-        [settings]: JSON.parse(yield readFile({ file: sourceFile }))
-      });
+      const settingsData = JSON.parse(yield readFile({ file: sourceFile }));
+      for(i = 0; i < destinationApiKeys.length; i++) {
+        yield crud('update', settings, {
+          apiKey: destinationApiKeys[i],
+          [settings]: settingsData
+        });
+      }
 
       // Show success message
       return {
@@ -237,28 +241,33 @@ const toolkit = co.wrap(function *executeInner(
           }
         };
       }
-      if(!destinationApiKey) {
+      if(!destinationApiKeys) {
         return {
           view: 'prompt',
           params: {
             questions: {
-              name: 'destinationApiKey',
-              type: 'list',
-              message: 'DESTINATION_GIGYA_SITE',
-              choices: sites
+              name: 'destinationApiKeys',
+              type: 'checkbox',
+              message: 'DESTINATION_GIGYA_SITES',
+              choices: _.filter(sites, (site) => site.value !== sourceApiKey)
             }
           }
         };
       }
 
-      // Push settings from source into destination
-      // We can't roll back, hope for the best!
-      // Could limit to single attribute to copy at a time...
+      const fetchedSettings = {};
       for(i = 0; i < settings.length; i++) {
-        yield crud('update', settings[i], {
-          apiKey: destinationApiKey,
-          [settings[i]]: yield crud('fetch', settings[i], { apiKey: sourceApiKey })
-        });
+        fetchedSettings[settings[i]] = yield crud('fetch', settings[i], { apiKey: sourceApiKey });
+      }
+
+      // Push settings from source into destination(s)
+      for(i = 0; i < destinationApiKeys.length; i++) {
+        for(ii = 0; ii < settings.length; ii++) {
+          yield crud('update', settings[ii], {
+            apiKey: destinationApiKeys[i],
+            [settings[ii]]: fetchedSettings[settings[ii]]
+          });
+        }
       }
 
       // Show success message
@@ -271,7 +280,7 @@ const toolkit = co.wrap(function *executeInner(
       break;
 
     case 'validate':
-      if(!sourceApiKey && !sourceFile) {
+      if(!sourceApiKey) {
         return {
           view: 'prompt',
           params: {
@@ -285,21 +294,23 @@ const toolkit = co.wrap(function *executeInner(
         };
       }
 
-      if(!destinationApiKey) {
+      if(!destinationApiKeys) {
         return {
           view: 'prompt',
           params: {
             questions: {
-              name: 'destinationApiKey',
-              type: 'list',
-              message: 'DESTINATION_GIGYA_SITE',
-              choices: sites
+              name: 'destinationApiKeys',
+              type: 'checkbox',
+              message: 'DESTINATION_GIGYA_SITES',
+              choices: _.filter(sites, (site) => site.value !== sourceApiKey)
             }
           }
         };
       }
 
-      const diffs = [];
+      const validations = [];
+      const sourceObjs = {};
+      let diffs;
       let diff;
       let sourceObj;
       let destinationObj;
@@ -307,75 +318,85 @@ const toolkit = co.wrap(function *executeInner(
       let numRemoved;
       let numChanged;
       let isDifferent;
+
       for(i = 0; i < settings.length; i++) {
-        // Fetch objects and run jsdiff
-        sourceObj = yield crud('fetch', settings[i], { apiKey: sourceApiKey });
-        destinationObj = yield crud('fetch', settings[i], { apiKey: destinationApiKey });
-        diff = jsdiff.diffJson(sourceObj, destinationObj);
+        sourceObjs[settings[i]] = yield crud('fetch', settings[i], { apiKey: sourceApiKey });
+      }
 
-        // Calculate stats
-        numAdded = 0;
-        numRemoved = 0;
-        diff.forEach((part) => {
-          if(part.added) {
-            numAdded += part.count;
-          } else if(part.removed) {
-            numRemoved += part.count;
-          }
-        });
-        numChanged = Math.min(numAdded, numRemoved);
-        numRemoved -= numChanged;
-        numAdded -= numChanged;
-        isDifferent = numAdded || numRemoved || numChanged;
+      for(ii = 0; ii < destinationApiKeys.length; ii++) {
+        diffs = [];
+        for(i = 0; i < settings.length; i++) {
+          // Fetch objects and run jsdiff
+          sourceObj = sourceObjs[settings[i]];
+          destinationObj = yield crud('fetch', settings[i], { apiKey: destinationApiKeys[ii] });
+          diff = jsdiff.diffJson(sourceObj, destinationObj);
 
-        // Abbreviate diff value if necessary, retains original value, creats new abbrValue index
-        // Standardize newlines
-        diff.forEach((part) => {
-          let i;
+          // Calculate stats
+          numAdded = 0;
+          numRemoved = 0;
+          diff.forEach((part) => {
+            if(part.added) {
+              numAdded += part.count;
+            } else if(part.removed) {
+              numRemoved += part.count;
+            }
+          });
+          numChanged = Math.min(numAdded, numRemoved);
+          numRemoved -= numChanged;
+          numAdded -= numChanged;
+          isDifferent = numAdded || numRemoved || numChanged;
 
-          // Trim newlines at ends so we can ENSURE they exist consistently
-          part.value = part.value.replace(/^[\r\n]+|[\r\n]+$/g, '') + "\n";
+          // Abbreviate diff value if necessary, retains original value, creats new abbrValue index
+          // Standardize newlines
+          diff.forEach((part) => {
+            let i;
 
-          // Abbr length varies, show less of unchanged text
-          const diffLength = part.added || part.removed ? 1000 : 300;
-          const halfDiffLength = (diffLength / 2);
-
-          // We don't want to show the entire value
-          // Limit to X chars -> find next newline -> if newline doesn't exist in X additional chars chop off
-          if(part.value.length > diffLength) {
-            // Halve diff
-            let valueFirstHalf = part.value.substr(0, halfDiffLength);
-            let valueLastHalf = part.value.substr(part.value.length - halfDiffLength);
-
-            // Look for newline breakpoints
-            valueFirstHalf = valueFirstHalf.substr(0, valueFirstHalf.lastIndexOf("\n"));
-            valueLastHalf = valueLastHalf.substr(valueLastHalf.indexOf("\n"));
-
-            // Write back to diff
             // Trim newlines at ends so we can ENSURE they exist consistently
-            part.abbrValue = valueFirstHalf.replace(/^[\r\n]+|[\r\n]+$/g, '')
-              + "\r\n...\r\n"
-              + valueLastHalf.replace(/^[\r\n]+|[\r\n]+$/g, '')
-              + "\r\n";
-          }
-        });
-  
-        // This is what we're returning
-        diffs.push({
-          setting: settings[i],
-          diff,
-          sourceObj,
-          destinationObj,
-          isDifferent,
-          numAdded,
-          numRemoved,
-          numChanged
-        });
+            part.value = part.value.replace(/^[\r\n]+|[\r\n]+$/g, '') + "\n";
+
+            // Abbr length varies, show less of unchanged text
+            const diffLength = part.added || part.removed ? 1000 : 300;
+            const halfDiffLength = (diffLength / 2);
+
+            // We don't want to show the entire value
+            // Limit to X chars -> find next newline -> if newline doesn't exist in X additional chars chop off
+            if(part.value.length > diffLength) {
+              // Halve diff
+              let valueFirstHalf = part.value.substr(0, halfDiffLength);
+              let valueLastHalf = part.value.substr(part.value.length - halfDiffLength);
+
+              // Look for newline breakpoints
+              valueFirstHalf = valueFirstHalf.substr(0, valueFirstHalf.lastIndexOf("\n"));
+              valueLastHalf = valueLastHalf.substr(valueLastHalf.indexOf("\n"));
+
+              // Write back to diff
+              // Trim newlines at ends so we can ENSURE they exist consistently
+              part.abbrValue = valueFirstHalf.replace(/^[\r\n]+|[\r\n]+$/g, '')
+                + "\r\n...\r\n"
+                + valueLastHalf.replace(/^[\r\n]+|[\r\n]+$/g, '')
+                + "\r\n";
+            }
+          });
+    
+          // This is what we're returning
+          diffs.push({
+            setting: settings[i],
+            diff,
+            sourceObj,
+            destinationObj,
+            isDifferent,
+            numAdded,
+            numRemoved,
+            numChanged
+          });
+        }
+
+        validations.push({ diffs, site: _.find(partnerSites[0].sites, { apiKey: destinationApiKeys[ii] }) });
       }
 
       return {
         view: 'validate',
-        params: { diffs }
+        params: { validations }
       }
       break;
   }

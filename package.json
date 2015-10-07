@@ -32,9 +32,7 @@
     "jquery": "2.1.4",
     "lodash": "3.10.1",
     "lz-string": "1.4.4",
-    "superagent": "1.4.0"
-  },
-  "devDependencies": {
+    "superagent": "1.4.0",
     "babelify": "6.3.0",
     "browserify": "11.2.0",
     "browserify-ngannotate": "1.0.1",

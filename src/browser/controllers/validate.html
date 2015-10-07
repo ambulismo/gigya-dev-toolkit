@@ -5,7 +5,7 @@
 .show-diff {
   margin-top: 10px;
 }
-.alert {
+.alert-warning {
   margin-top: 15px;
   cursor: pointer;
 }
@@ -24,33 +24,48 @@
 .jsdiff .jsdiff-removed {
   color: #EF4545;
 }
+.header {
+  margin-bottom: 20px;
+}
+.header h4 {
+  margin: 0;
+  padding: 0;
+}
 </style>
 
-<div ng-repeat="diff in vm.diffs" class="diff">
-  <div class="alert"
-       ng-class="{'alert-warning': diff.isDifferent, 'alert-success': !diff.isDifferent}"
-       role="alert"
-       ng-click="diff.showDiff = !diff.showDiff">
-    <div>
-      <strong>{{ diff.setting.toUpperCase() | translate }}:</strong>
-      <span>{{ diff.isDifferent ? 'VALIDATION_FAILED' : 'VALIDATION_PASSED' | translate }}</span>
-    </div>
-    <div ng-if="diff.numChanged">
-      <strong>{{ 'CHANGED' | translate }}:</strong> {{ diff.numChanged }} {{ diff.numChanged > 1 ? 'VALUES' : 'VALUE' | translate }}
-    </div>
-    <div ng-if="diff.numRemoved">
-      <strong>{{ 'REMOVED' | translate }}:</strong> {{ diff.numRemoved }} {{ diff.numRemoved > 1 ? 'VALUES' : 'VALUE' | translate }}
-    </div>
-    <div ng-if="diff.numAdded">
-      <strong>{{ 'ADDED' | translate }}:</strong> {{ diff.numAdded }} {{ diff.numAdded > 1 ? 'VALUES' : 'VALUE' | translate }}
-    </div>
-    <div ng-if="diff.isDifferent" class="show-diff">
-      <span class="glyphicon"
-            ng-class="{ 'glyphicon-triangle-bottom': !diff.showDiff, 'glyphicon-triangle-top': diff.showDiff }"
-            aria-hidden="true"></span>
-      {{ !diff.showDiff ? 'CLICK_TO_SHOW_VISUAL_DIFF' : 'CLICK_TO_HIDE_VISUAL_DIFF' | translate }}
-    </div>
+<div ng-repeat="validation in vm.validations">
+  <div class="header">
+    <h4>{{:: validation.site.baseDomain }}</h4>
+    <div ng-if="validation.site.description">{{:: validation.site.description }}</div>
+    <div>{{:: validation.site.apiKey }}</div>
   </div>
 
-  <jsdiff ng-if="diff.isDifferent && diff.showDiff" diff="diff.diff"></jsdiff>
+  <div ng-repeat="diff in validation.diffs" class="diff">
+    <div class="alert"
+         ng-class="{'alert-warning': diff.isDifferent, 'alert-success': !diff.isDifferent}"
+         role="alert"
+         ng-click="diff.showDiff = !diff.showDiff">
+      <div>
+        <strong>{{ diff.setting.toUpperCase() | translate }}:</strong>
+        <span>{{ diff.isDifferent ? 'VALIDATION_FAILED' : 'VALIDATION_PASSED' | translate }}</span>
+      </div>
+      <div ng-if="diff.numChanged">
+        <strong>{{ 'CHANGED' | translate }}:</strong> {{ diff.numChanged }} {{ diff.numChanged > 1 ? 'VALUES' : 'VALUE' | translate }}
+      </div>
+      <div ng-if="diff.numRemoved">
+        <strong>{{ 'REMOVED' | translate }}:</strong> {{ diff.numRemoved }} {{ diff.numRemoved > 1 ? 'VALUES' : 'VALUE' | translate }}
+      </div>
+      <div ng-if="diff.numAdded">
+        <strong>{{ 'ADDED' | translate }}:</strong> {{ diff.numAdded }} {{ diff.numAdded > 1 ? 'VALUES' : 'VALUE' | translate }}
+      </div>
+      <div ng-if="diff.isDifferent" class="show-diff">
+        <span class="glyphicon"
+              ng-class="{ 'glyphicon-triangle-bottom': !diff.showDiff, 'glyphicon-triangle-top': diff.showDiff }"
+              aria-hidden="true"></span>
+        {{ !diff.showDiff ? 'CLICK_TO_SHOW_VISUAL_DIFF' : 'CLICK_TO_HIDE_VISUAL_DIFF' | translate }}
+      </div>
+    </div>
+
+    <jsdiff ng-if="diff.isDifferent && diff.showDiff" diff="diff.diff"></jsdiff>
+  </div>
 </div>
