@@ -16,10 +16,13 @@ For convenience, the GDT browser interface is hosted online at: [https://tools.g
 
 ````npm install gigya-dev-toolkit```` will install all dependencies and build the app. To start the web server, run ````npm start````. Navigate to [http://localhost:5050](http://localhost:5050).
 
+![gigya-task-selection](https://cloud.githubusercontent.com/assets/1831484/10328509/76ec4508-6c6a-11e5-8cd7-df1f4ccf1713.png)
 
 #### Command-line
 
 ````npm -g install gigya-dev-toolkit```` will install the ````gigya-dev-toolkit```` interactive command-line interface on your machine.
+
+![command-line](https://cloud.githubusercontent.com/assets/1831484/10329242/44a6161a-6c73-11e5-8d53-ba4b73a1eb38.png)
 
 The command-line utility is designed to assist in automating all GDT tasks as part of your build process. After running a successful command via the interactive interace, the full command with arguments will be shown so that you can easily run the same command again. One common use of the GDT command-line is to validate that your policies/schema/screensets match across environments. (Development = QA/Staging/Production, for example.) It is bad practice to use the Gigya console to manually copy settings between environments.
 
