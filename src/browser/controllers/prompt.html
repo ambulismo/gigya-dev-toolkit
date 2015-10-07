@@ -1,0 +1,49 @@
+<style type="text/css">
+.question-label {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.radio, .checkbox {
+  margin-top: 0px;
+}
+</style>
+
+<form>
+  <div class="form-group"
+       ng-repeat="question in vm.questions"
+       ng-show="!question.when || question.when(vm.answers)">
+    <label class="question-label">{{ question.message | translate }}</label>
+
+    <div ng-if="question.type === 'input'">
+      <input type="text" class="form-control" ng-model="vm.answers[question.name]" placeholder="{{ question.default | translate }}">
+    </div>
+
+    <div ng-if="question.type === 'password'">
+      <input type="password" class="form-control" ng-model="vm.answers[question.name]">
+    </div>
+
+    <div ng-if="question.type === 'file'">
+      <input type="file" filereader ng-model="vm.answers[question.name]">
+    </div>
+
+    <div ng-if="question.type === 'list'">
+      <div class="radio" ng-repeat="choice in question.choices">
+        <label>
+          <input type="radio" ng-model="vm.answers[question.name]" ng-value="choice.value">
+          {{ choice.name | translate }}
+        </label>
+      </div>
+    </div>
+
+    <div ng-if="question.type === 'checkbox'">
+      <div class="checkbox" ng-repeat="choice in question.choices">
+        <label>
+          <input type="checkbox" ng-model="vm.answers[question.name][choice.value]">
+          {{ choice.name | translate }}
+        </label>
+      </div>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary" ng-click="vm.submit()">{{ 'SUBMIT' | translate }}</button>
+</form>

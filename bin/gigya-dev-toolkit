@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+require('babel/register')({
+  // Used for static vars on class
+  optional: ['es7.classProperties'],
+
+  // When installed for command-line use, do not ignore because we live in node_modules/
+  ignore: /node_modules\/(?!gigya-dev-toolkit)/
+});
+require('../src/gigya-dev-toolkit-cli.js');

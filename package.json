@@ -1,0 +1,60 @@
+{
+  "name": "gigya-dev-toolkit",
+  "version": "1.1.0",
+  "description": "Gigya developer toolkit for common tasks, with a focus on ease-of-use and automation. All tools are available from both a web browser and an interactive command-line.",
+  "main": "src/gigya-dev-toolkit.js",
+  "scripts": {
+    "start": "node server;",
+    "postinstall": "gulp build-prod;"
+  },
+  "bin": {
+    "gigya-dev-toolkit" : "./bin/gigya-dev-toolkit"
+  },
+  "dependencies": {
+    "angular": "1.4.6",
+    "angular-cookies": "1.4.7",
+    "angular-sanitize": "1.4.6",
+    "angular-translate": "2.8.1",
+    "angular-translate-storage-cookie": "2.8.1",
+    "angular-translate-storage-local": "2.8.1",
+    "angular-ui-router": "0.2.15",
+    "babel": "5.8.23",
+    "base64url": "1.0.4",
+    "body-parser": "1.14.1",
+    "bootstrap": "3.3.5",
+    "browser-filesaver": "1.1.0",
+    "co": "4.6.0",
+    "colors": "1.1.2",
+    "commander": "2.8.1",
+    "diff": "2.1.2",
+    "express": "4.13.3",
+    "inquirer": "0.10.1",
+    "jquery": "2.1.4",
+    "lodash": "3.10.1",
+    "lz-string": "1.4.4",
+    "superagent": "1.4.0"
+  },
+  "devDependencies": {
+    "babelify": "6.3.0",
+    "browserify": "11.2.0",
+    "browserify-ngannotate": "1.0.1",
+    "gulp": "3.9.0",
+    "gulp-util": "3.0.6",
+    "load-plugins": "2.1.0",
+    "minifyify": "7.1.0",
+    "stringify": "3.1.0",
+    "vinyl-buffer": "1.0.0",
+    "vinyl-source-stream": "1.1.0",
+    "watchify": "3.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gigya/gigya-dev-toolkit.git"
+  },
+  "author": "Scott Hovestadt <scott.hovestadt@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gigya/gigya-dev-toolkit/issues"
+  },
+  "homepage": "https://github.com/gigya/gigya-dev-toolkit#readme"
+}

@@ -1,0 +1,54 @@
+<style type="text/css">
+.state {
+  min-height: 22px;
+}
+.languages {
+  position: absolute;
+  bottom: 10px;
+  right: 0;
+}
+.language-button {
+  width: 80px;
+  margin-right: 10px;
+}
+</style>
+
+<div class="state">
+  <div ng-if="vm.state.userKey">
+    <strong>{{ 'GIGYA_USER_KEY' | translate }}:</strong> {{ vm.state.userKey }}
+  </div>
+  <div ng-if="vm.state.userKey">
+    <strong>{{ 'GIGYA_USER_SECRET_KEY' | translate }}:</strong> {{ '*'.repeat(vm.state.userSecret.length) }}
+  </div>
+  <div ng-if="vm.state.partnerId">
+    <strong>{{ 'GIGYA_PARTNER_ID' | translate }}:</strong> {{ vm.state.partnerId }}
+  </div>
+  <div ng-if="vm.state.task">
+    <strong>{{ 'TASK' | translate }}:</strong> {{ vm.state.task.toUpperCase() | translate }}
+  </div>
+  <div ng-if="vm.state.settings">
+    <strong>{{ 'SETTINGS' | translate }}:</strong>
+
+    <!-- Ugly hack to detect if settings is an array -->
+    <!-- When support is added to import multiple files will remove this -->
+    <span ng-if="vm.state.settings.length > 3">{{ vm.state.settings.toUpperCase() | translate }}</span>
+    <span ng-if="vm.state.settings.length <= 3"><span ng-repeat="setting in vm.state.settings">{{ setting.toUpperCase() | translate }}{{:: !$last ? ', ' : '' }}</span></span>
+  </span>
+  </div>
+  <div ng-if="vm.state.sourceApiKey">
+    <strong>{{ 'SOURCE_GIGYA_SITE' | translate }}:</strong> {{ vm.state.sourceApiKey }}
+  </div>
+  <div ng-if="vm.state.destinationApiKey">
+    <strong>{{ 'DESTINATION_GIGYA_SITE' | translate }}:</strong> {{ vm.state.destinationApiKey }}
+  </div>
+</div>
+
+<div class="languages">
+  <button type="button"
+          class="btn btn-xs language-button"
+          ng-repeat="language in vm.languages"
+          ng-class="{ 'btn-info': language.code === vm.languageCode(), 'btn-default': language.code !== vm.languageCode() }"
+          ng-click="vm.switchLanguage(language.code)">
+    {{ language.label | translate }}
+  </button>
+</div>

@@ -1,0 +1,56 @@
+<style type="text/css">
+.diff {
+  margin-bottom: 30px;
+}
+.show-diff {
+  margin-top: 10px;
+}
+.alert {
+  margin-top: 15px;
+  cursor: pointer;
+}
+.jsdiff {
+  margin-bottom: 20px;
+}
+.jsdiff pre {
+  margin: 0;
+}
+.jsdiff .jsdiff-unchanged {
+  color: #D0CFCF;
+}
+.jsdiff .jsdiff-added {
+  color: #178A17;
+}
+.jsdiff .jsdiff-removed {
+  color: #EF4545;
+}
+</style>
+
+<div ng-repeat="diff in vm.diffs" class="diff">
+  <div class="alert"
+       ng-class="{'alert-warning': diff.isDifferent, 'alert-success': !diff.isDifferent}"
+       role="alert"
+       ng-click="diff.showDiff = !diff.showDiff">
+    <div>
+      <strong>{{ diff.setting.toUpperCase() | translate }}:</strong>
+      <span>{{ diff.isDifferent ? 'VALIDATION_FAILED' : 'VALIDATION_PASSED' | translate }}</span>
+    </div>
+    <div ng-if="diff.numChanged">
+      <strong>{{ 'CHANGED' | translate }}:</strong> {{ diff.numChanged }} {{ diff.numChanged > 1 ? 'VALUES' : 'VALUE' | translate }}
+    </div>
+    <div ng-if="diff.numRemoved">
+      <strong>{{ 'REMOVED' | translate }}:</strong> {{ diff.numRemoved }} {{ diff.numRemoved > 1 ? 'VALUES' : 'VALUE' | translate }}
+    </div>
+    <div ng-if="diff.numAdded">
+      <strong>{{ 'ADDED' | translate }}:</strong> {{ diff.numAdded }} {{ diff.numAdded > 1 ? 'VALUES' : 'VALUE' | translate }}
+    </div>
+    <div ng-if="diff.isDifferent" class="show-diff">
+      <span class="glyphicon"
+            ng-class="{ 'glyphicon-triangle-bottom': !diff.showDiff, 'glyphicon-triangle-top': diff.showDiff }"
+            aria-hidden="true"></span>
+      {{ !diff.showDiff ? 'CLICK_TO_SHOW_VISUAL_DIFF' : 'CLICK_TO_HIDE_VISUAL_DIFF' | translate }}
+    </div>
+  </div>
+
+  <jsdiff ng-if="diff.isDifferent && diff.showDiff" diff="diff.diff"></jsdiff>
+</div>
