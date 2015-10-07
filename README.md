@@ -14,7 +14,7 @@ For convenience, the GDT browser interface is hosted online at: [https://tools.g
 
 #### Browser
 
-````npm install```` will install all dependencies and build the app. To start the web server, run ````npm start````. Navigate to [http://localhost:5050](http://localhost:5050).
+````npm install gigya-dev-toolkit```` will install all dependencies and build the app. To start the web server, run ````npm start````. Navigate to [http://localhost:5050](http://localhost:5050).
 
 
 #### Command-line
