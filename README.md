@@ -21,9 +21,9 @@ For convenience, the GDT browser interface is hosted online at: [https://tools.g
 
 ````npm -g install gigya-dev-toolkit```` will install the ````gigya-dev-toolkit```` interactive command-line interface on your machine.
 
-The GDT command-line treats the current working directory as it's project directory. All exported files will be automatically downloaded into the current working directory, the file selection dialog shows you only files in the current working directory, etc. 
+The command-line utility is designed to assist in automating all GDT tasks as part of your build process. After running a successful command via the interactive interace, the full command with arguments will be shown so that you can easily run the same command again. One common use of the GDT command-line is to validate that your policies/schema/screensets match across environments. (Development = QA/Staging/Production, for example.) It is bad practice to use the Gigya console to manually copy settings between environments.
 
-After running a successful command via the interactive interace, the full command with arguments will be shown so that you can easily run the same command again.
+The GDT command-line treats the current working directory as it's project directory. All exported files will be automatically downloaded into the current working directory, the file selection dialog shows you only files in the current working directory, etc. 
 
 ##### Save credentials
 
