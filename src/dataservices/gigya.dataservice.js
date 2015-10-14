@@ -18,7 +18,33 @@ class GigyaDataservice {
   }
 
   static fetchSchema({ userKey, userSecret, apiKey }) {
-    return GigyaDataservice._api({ endpoint: 'accounts.getSchema', userKey, userSecret, params: { apiKey } });
+    return GigyaDataservice._api({ endpoint: 'accounts.getSchema', userKey, userSecret, params: { apiKey }, transform: (schema) => {
+      // Profile schema has a bunch of things that are read-only
+      // We don't save these to the file because they never change
+      delete schema.profileSchema.unique;
+      delete schema.profileSchema.dynamicSchema;
+      _.each(schema.profileSchema.fields, (field, key) => {
+        delete field.arrayOp;
+        delete field.allowNull;
+        delete field.type;
+        delete field.encrypt;
+        delete field.format;
+      });
+
+      // Cannot set empty unique field on dataSchema or error
+      if(schema.dataSchema.unique && _.isArray(schema.dataSchema.unique) && schema.dataSchema.unique.length === 0) {
+        delete schema.dataSchema.unique;
+      }
+
+      // Remove fields from dataSchema that do not have a type
+      _.each(schema.dataSchema.fields, (field, key) => {
+        if(!field.type) {
+          delete schema.dataSchema.fields[key];
+        }
+      });
+
+      return schema;
+    } });
   }
 
   static fetchPolicies({ userKey, userSecret, apiKey }) {
@@ -36,23 +62,6 @@ class GigyaDataservice {
   }
 
   static updateSchema({ userKey, userSecret, apiKey, schema }) {
-    // Profile schema has a bunch of things that are read-only
-    // We don't save these to the file because they never change
-    delete schema.profileSchema.unique;
-    delete schema.profileSchema.dynamicSchema;
-    _.each(schema.profileSchema.fields, function(field, key) {
-      delete field.arrayOp;
-      delete field.allowNull;
-      delete field.type;
-      delete field.encrypt;
-      delete field.format;
-    });
-
-    // Cannot set empty unique field on dataSchema or error
-    if(schema.dataSchema.unique && _.isArray(schema.dataSchema.unique) && schema.dataSchema.unique.length === 0) {
-      delete schema.dataSchema.unique;
-    }
-
     const params = {
       apiKey,
       profileSchema: schema.profileSchema,
