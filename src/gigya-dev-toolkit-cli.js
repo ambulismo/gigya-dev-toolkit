@@ -185,8 +185,13 @@ function main() {
           console.error(err);
         }
       }
+
+      state.finished = true;
+      main();
     });
-  } else { // finished
+  }
+
+  if(state.finished) {
     // Provide easy way to run this command again:
     let consoleCommand = 'gigya-dev-toolkit';
 
